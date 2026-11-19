@@ -1,5 +1,5 @@
 import { collections as db } from "../config/db.js";
-import { ACTIVE_ITEM_STATUSES, ACTIVE_ORDER_STATUSES, FREE_PLAN_LIMIT } from "../constants.js";
+import { FREE_PLAN_LIMIT } from "../constants.js";
 import { ApiError } from "../utils/ApiError.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { sameId, serialize, str, toObjectId } from "../utils/helpers.js";
@@ -146,5 +146,3 @@ export const updateOrderStatus = asyncHandler(async (req, res) => {
   }
   res.json({ message: `Order ${req.body.status}`, order: serialize(updated) });
 });
-
-export { ACTIVE_ITEM_STATUSES };

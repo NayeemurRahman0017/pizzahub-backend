@@ -1,4 +1,3 @@
-import { collections as db } from "../config/db.js";
 import { FREE_PLAN_LIMIT } from "../constants.js";
 import { env } from "../config/env.js";
 import { ApiError } from "../utils/ApiError.js";
@@ -46,5 +45,3 @@ export const mySubscription = asyncHandler(async (req, res) => {
     activeItemLimit: premium ? null : FREE_PLAN_LIMIT,
   });
 });
-
-void db; // (db imported for future use)
