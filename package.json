@@ -1,18 +1,16 @@
 {
   "name": "pizzahub-backend",
   "version": "1.0.0",
-  "description": "",
+  "private": true,
+  "description": "PizzaHub Backend API",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon index.js",
     "start": "node index.js",
     "make-admin": "node scripts/make-admin.js"
   },
-  "keywords": [],
-  "type": "module",
   "dependencies": {
-    "@stripe/stripe-js": "^10.3.0",
     "cors": "^2.8.6",
     "dotenv": "^18.0.10",
     "express": "^5.3.0",
@@ -20,7 +18,6 @@
     "helmet": "^8.3.0",
     "jose": "^6.2.18",
     "mongodb": "^7.9.0",
-    "next": "^16.4.6",
     "stripe": "^23.2.0",
     "zod": "^4.6.7"
   },
