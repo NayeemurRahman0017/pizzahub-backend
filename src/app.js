@@ -4,8 +4,9 @@ import helmet from "helmet";
 import rateLimit from "express-rate-limit";
 
 import { env } from "./config/env.js";
-import { errorHandler, notFound } from "./middleware/error.js";
+import { connectDB } from "./config/db.js";
 
+import { errorHandler, notFound } from "./middleware/error.js";
 import { stripeWebhook } from "./controllers/webhook.controller.js";
 
 import menuRoutes from "./routes/menu.routes.js";
@@ -29,6 +30,16 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
+
+// Ensure MongoDB connection before handling requests
+app.use(async (_req, _res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    next(error);
+  }
+});
 
 // Root route
 app.get("/", (_req, res) => {
