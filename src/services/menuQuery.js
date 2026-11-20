@@ -15,7 +15,6 @@ export const vendorLookup = [
   { $unwind: "$vendor" },
 ];
 
-/** Public view: approved items, vendor not blocked, premium vendors flagged (featured placement). */
 export function publicPipeline(match = {}, search = "") {
   const stages = [
     { $match: { ...match, status: "approved" } },
@@ -37,7 +36,6 @@ export function publicPipeline(match = {}, search = "") {
         },
       },
     },
-    // never expose private vendor fields publicly
     { $project: { "vendor.email": 0, "vendor.isBlocked": 0, "vendor.subscriptionExpiresAt": 0 } }
   );
   return stages;

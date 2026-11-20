@@ -6,15 +6,8 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { userIdFilter } from "../utils/helpers.js";
 import { expireSubscriptionIfNeeded } from "../services/subscription.js";
 
-// Better Auth (jwt plugin) publishes its public keys here.
 const JWKS = createRemoteJWKSet(new URL("/api/auth/jwks", env.frontendUrl));
 
-/**
- * 1. Read "Authorization: Bearer <jwt>"
- * 2. Verify signature, expiry, issuer and audience (invalid/expired -> 401)
- * 3. Load the user from the DB and take the ROLE FROM THE DB, never from the client/token
- * 4. Blocked users -> 403
- */
 export const verifyJWT = asyncHandler(async (req, _res, next) => {
   const [scheme, token] = (req.headers.authorization || "").split(" ");
   if (scheme !== "Bearer" || !token) {

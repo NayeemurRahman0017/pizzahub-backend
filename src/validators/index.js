@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { CATEGORIES } from "../constants.js";
 
-// Menu images must be uploaded to ImgBB (https, ibb.co hosts only)
 const imgbbUrl = z
   .string()
   .url()

@@ -8,7 +8,6 @@ import { publicPipeline } from "../services/menuQuery.js";
 const SORTS = { priceAsc: { price: 1, _id: 1 }, priceDesc: { price: -1, _id: 1 } };
 const DEFAULT_SORT = { isPremiumVendor: -1, createdAt: -1, _id: -1 };
 
-// GET /api/menu?search=&category=&location=&sort=priceAsc|priceDesc&page=&limit=
 export const listMenuItems = asyncHandler(async (req, res) => {
   const search = str(req.query.search);
   const category = str(req.query.category);
@@ -45,7 +44,6 @@ export const listMenuItems = asyncHandler(async (req, res) => {
   });
 });
 
-// GET /api/menu/featured  (at least 6 approved items, premium vendors first)
 export const featuredItems = asyncHandler(async (_req, res) => {
   const items = await db
     .menuItems()
@@ -54,7 +52,6 @@ export const featuredItems = asyncHandler(async (_req, res) => {
   res.json({ items: serialize(items) });
 });
 
-// GET /api/menu/:id  (login required) - only approved & active items
 export const getMenuItem = asyncHandler(async (req, res) => {
   const _id = toObjectId(req.params.id, "menu item id");
   const [item] = await db.menuItems().aggregate(publicPipeline({ _id })).toArray();

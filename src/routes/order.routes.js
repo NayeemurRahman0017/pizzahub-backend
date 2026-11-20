@@ -7,7 +7,7 @@ import * as c from "../controllers/order.controller.js";
 const router = Router();
 router.use(verifyJWT);
 
-router.post("/", requireRole("customer", "vendor"), validate(orderSchema), c.createOrder); // admins cannot order
+router.post("/", requireRole("customer", "vendor"), validate(orderSchema), c.createOrder);
 router.get("/my", requireRole("customer", "vendor"), c.myOrders);
 router.get("/overview", requireRole("customer", "vendor"), c.myOverview);
 router.get("/:id", requireRole("customer", "vendor"), c.getOrder);

@@ -30,7 +30,6 @@ const shutdown = async (signal) => {
 process.on("SIGINT", () => shutdown("SIGINT"));
 process.on("SIGTERM", () => shutdown("SIGTERM"));
 
-// Without these, an unhandled rejection would leave the process alive but broken.
 process.on("unhandledRejection", (reason) => {
   console.error("Unhandled rejection:", reason);
 });

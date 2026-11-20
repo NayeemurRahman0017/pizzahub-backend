@@ -16,7 +16,6 @@ const pagination = (result, page, limit) => {
   return { page, limit, total, totalPages: Math.ceil(total / limit) };
 };
 
-// GET /api/admin/overview
 export const overview = asyncHandler(async (_req, res) => {
   const [totalUsers, totalVendors, totalCustomers, totalMenuItems, pendingMenuItems, totalTransactions] = await Promise.all([
     db.users().countDocuments({}),
@@ -29,7 +28,6 @@ export const overview = asyncHandler(async (_req, res) => {
   res.json({ totalUsers, totalVendors, totalCustomers, totalMenuItems, pendingMenuItems, totalTransactions });
 });
 
-// GET /api/admin/users?search=&role=&page=&limit=
 export const listUsers = asyncHandler(async (req, res) => {
   const search = str(req.query.search);
   const role = str(req.query.role);
@@ -49,7 +47,6 @@ export const listUsers = asyncHandler(async (req, res) => {
   res.json({ users: items.map(publicUser), pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } });
 });
 
-// GET /api/admin/users/:id
 export const getUser = asyncHandler(async (req, res) => {
   const user = await db.users().findOne(userIdFilter(req.params.id));
   if (!user) throw new ApiError(404, "User not found");
@@ -60,7 +57,6 @@ export const getUser = asyncHandler(async (req, res) => {
   res.json({ user: publicUser(user), stats: { menuItems, orders } });
 });
 
-// PATCH /api/admin/users/:id/block  { isBlocked: boolean }
 export const setBlocked = asyncHandler(async (req, res) => {
   const user = await db.users().findOne(userIdFilter(req.params.id));
   if (!user) throw new ApiError(404, "User not found");
@@ -71,7 +67,6 @@ export const setBlocked = asyncHandler(async (req, res) => {
   res.json({ message: req.body.isBlocked ? "User blocked" : "User unblocked", user: publicUser({ ...user, isBlocked: req.body.isBlocked }) });
 });
 
-// GET /api/admin/menu-items?search=&status=&page=&limit=
 export const listMenuItems = asyncHandler(async (req, res) => {
   const search = str(req.query.search);
   const status = str(req.query.status);
@@ -89,7 +84,6 @@ export const listMenuItems = asyncHandler(async (req, res) => {
   res.json({ items: serialize(result.items), pagination: pagination(result, page, limit) });
 });
 
-// Allowed status transitions
 const TRANSITIONS = {
   pending: ["approved", "rejected"],
   approved: ["inactive", "rejected"],
@@ -97,7 +91,6 @@ const TRANSITIONS = {
   rejected: ["approved"],
 };
 
-// PATCH /api/admin/menu-items/:id/status  { status: approved | rejected | inactive }
 export const setItemStatus = asyncHandler(async (req, res) => {
   const _id = toObjectId(req.params.id, "menu item id");
   const item = await db.menuItems().findOne({ _id });
@@ -108,7 +101,6 @@ export const setItemStatus = asyncHandler(async (req, res) => {
     throw new ApiError(409, `Cannot change status from ${item.status} to ${next}`);
   }
 
-  // Reviving a rejected/inactive item makes it "active" again: respect the vendor's Free plan limit.
   if (!ACTIVE_ITEM_STATUSES.includes(item.status) && next === "approved") {
     const vendor = await db.users().findOne({ _id: item.vendorId });
     if (vendor?.subscriptionPlan !== "premium") {
@@ -120,7 +112,6 @@ export const setItemStatus = asyncHandler(async (req, res) => {
   res.json({ message: `Item ${next}`, status: next });
 });
 
-// DELETE /api/admin/menu-items/:id
 export const deleteItem = asyncHandler(async (req, res) => {
   const _id = toObjectId(req.params.id, "menu item id");
   const { deletedCount } = await db.menuItems().deleteOne({ _id });
@@ -128,7 +119,6 @@ export const deleteItem = asyncHandler(async (req, res) => {
   res.json({ message: "Menu item deleted" });
 });
 
-// GET /api/admin/transactions?status=&page=&limit=   (READ-ONLY: no write endpoints exist)
 export const listTransactions = asyncHandler(async (req, res) => {
   const status = str(req.query.status);
   const { page, limit, skip } = parsePaging(req.query, { defaultLimit: 10, maxLimit: 100 });

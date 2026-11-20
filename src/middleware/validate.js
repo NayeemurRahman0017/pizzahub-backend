@@ -11,6 +11,6 @@ export const validate = (schema) => (req, _res, next) => {
       )
     );
   }
-  req.body = result.data; // unknown fields (role, vendorId, status...) are stripped
+  req.body = result.data;
   next();
 };

@@ -3,7 +3,6 @@ import { ACTIVE_ITEM_STATUSES, FREE_PLAN_LIMIT } from "../constants.js";
 
 const GRACE_MS = 24 * 60 * 60 * 1000; // allow renewal webhooks to arrive
 
-/** Keep only the oldest FREE_PLAN_LIMIT active items; deactivate the rest. */
 export async function enforceFreeLimit(vendorId) {
   const keep = await db
     .menuItems()
@@ -29,7 +28,6 @@ export async function activatePremium(userId, expiresAt) {
     .updateOne({ _id: userId }, { $set: { subscriptionPlan: "premium", subscriptionExpiresAt: expiresAt } });
 }
 
-/** Subscription expiration: runs on every authenticated request. */
 export async function expireSubscriptionIfNeeded(user) {
   if (
     user.subscriptionPlan === "premium" &&

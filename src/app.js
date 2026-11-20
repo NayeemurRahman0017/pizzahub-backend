@@ -25,7 +25,6 @@ app.use(
   })
 );
 
-// Stripe needs the RAW body to verify the signature, so this goes BEFORE express.json()
 app.post("/api/webhooks/stripe", express.raw({ type: "application/json" }), stripeWebhook);
 
 app.use(express.json({ limit: "100kb" }));

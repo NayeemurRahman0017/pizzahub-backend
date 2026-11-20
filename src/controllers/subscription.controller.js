@@ -5,9 +5,6 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { stripe } from "../services/stripe.js";
 import { countActiveItems } from "../services/subscription.js";
 
-// POST /api/subscriptions/checkout
-// The vendor comes ONLY from the verified JWT. No vendor id is accepted from the client,
-// so nobody can create a checkout session for another vendor.
 export const createCheckoutSession = asyncHandler(async (req, res) => {
   if (req.user.subscriptionPlan === "premium") throw new ApiError(409, "You are already on the Premium plan");
 
@@ -35,7 +32,6 @@ export const createCheckoutSession = asyncHandler(async (req, res) => {
   res.status(201).json({ url: session.url });
 });
 
-// GET /api/subscriptions/me
 export const mySubscription = asyncHandler(async (req, res) => {
   const premium = req.user.subscriptionPlan === "premium";
   res.json({

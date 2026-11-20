@@ -15,7 +15,6 @@ export async function connectDB() {
     db.collection("orders").createIndex({ customerId: 1, createdAt: -1 }),
     db.collection("orders").createIndex({ vendorId: 1, status: 1, createdAt: -1 }),
     db.collection("orders").createIndex({ itemId: 1, deliveryDate: 1 }),
-    // Makes webhook retries idempotent: one transaction per Stripe session
     db.collection("transactions").createIndex({ stripeSessionId: 1 }, { unique: true }),
     db.collection("transactions").createIndex({ vendorId: 1, createdAt: -1 }),
   ]);

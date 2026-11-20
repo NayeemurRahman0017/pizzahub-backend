@@ -13,7 +13,6 @@ async function assertCanActivateMore(user) {
   }
 }
 
-// Ownership check: 404 if missing, 403 if it belongs to another vendor
 async function getOwnedItem(req) {
   const _id = toObjectId(req.params.id, "menu item id");
   const item = await db.menuItems().findOne({ _id });
@@ -22,7 +21,6 @@ async function getOwnedItem(req) {
   return item;
 }
 
-// GET /api/vendor/overview
 export const overview = asyncHandler(async (req, res) => {
   const vendorId = req.user._id;
   const since = new Date();
@@ -62,13 +60,11 @@ export const overview = asyncHandler(async (req, res) => {
   });
 });
 
-// GET /api/vendor/menu-items  (own items only, with approval status)
 export const listMyItems = asyncHandler(async (req, res) => {
   const items = await db.menuItems().find({ vendorId: req.user._id }).sort({ createdAt: -1 }).toArray();
   res.json({ items: serialize(items) });
 });
 
-// POST /api/vendor/menu-items  (status always starts as "pending")
 export const createItem = asyncHandler(async (req, res) => {
   await assertCanActivateMore(req.user);
   const doc = { ...req.body, vendorId: req.user._id, status: "pending", createdAt: new Date() };
@@ -76,17 +72,14 @@ export const createItem = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Menu item submitted. It will appear after admin approval.", item: serialize({ ...doc, _id: insertedId }) });
 });
 
-// GET /api/vendor/menu-items/:id
 export const getMyItem = asyncHandler(async (req, res) => {
   res.json({ item: serialize(await getOwnedItem(req)) });
 });
 
-// PUT /api/vendor/menu-items/:id
 export const updateItem = asyncHandler(async (req, res) => {
   const item = await getOwnedItem(req);
   const changes = { ...req.body };
 
-  // Edited content must be re-reviewed by an admin. Inactive/pending items keep their status.
   if (item.status === "approved" || item.status === "rejected") {
     if (item.status === "rejected") await assertCanActivateMore(req.user);
     changes.status = "pending";
@@ -95,7 +88,6 @@ export const updateItem = asyncHandler(async (req, res) => {
   res.json({ message: "Menu item updated", item: serialize({ ...item, ...changes }) });
 });
 
-// DELETE /api/vendor/menu-items/:id
 export const deleteItem = asyncHandler(async (req, res) => {
   const item = await getOwnedItem(req);
   const activeOrders = await db.orders().countDocuments({ itemId: item._id, status: { $in: ACTIVE_ORDER_STATUSES } });
@@ -104,7 +96,6 @@ export const deleteItem = asyncHandler(async (req, res) => {
   res.json({ message: "Menu item deleted" });
 });
 
-// PATCH /api/vendor/menu-items/:id/availability  { available: boolean }
 export const setAvailability = asyncHandler(async (req, res) => {
   const item = await getOwnedItem(req);
   if (req.body.available) {
@@ -118,7 +109,6 @@ export const setAvailability = asyncHandler(async (req, res) => {
   res.json({ message: "Item is now unavailable", status: "inactive" });
 });
 
-// GET /api/vendor/orders?status=
 export const listOrders = asyncHandler(async (req, res) => {
   const status = str(req.query.status);
   const match = { vendorId: req.user._id };
@@ -130,8 +120,6 @@ export const listOrders = asyncHandler(async (req, res) => {
   res.json({ orders: serialize(orders) });
 });
 
-// PATCH /api/vendor/orders/:id/status  { status: "accepted" | "rejected" }
-// Atomic: only the owning vendor, only while pending, so it can happen only once.
 export const updateOrderStatus = asyncHandler(async (req, res) => {
   const _id = toObjectId(req.params.id, "order id");
   const updated = await db

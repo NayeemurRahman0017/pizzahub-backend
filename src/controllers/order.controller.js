@@ -6,12 +6,10 @@ import { sameId, serialize, toObjectId } from "../utils/helpers.js";
 import { publicPipeline } from "../services/menuQuery.js";
 import { orderDetailStages } from "../services/orderQuery.js";
 
-// POST /api/orders  (customer or vendor; admins are blocked at the route)
 export const createOrder = asyncHandler(async (req, res) => {
   const { itemId: rawItemId, deliveryDate, deliveryAddress, message } = req.body;
   const itemId = toObjectId(rawItemId, "item id");
 
-  // only approved & active items from non-blocked vendors can be ordered
   const [item] = await db.menuItems().aggregate(publicPipeline({ _id: itemId })).toArray();
   if (!item) throw new ApiError(404, "Menu item not found or not available for ordering");
   if (sameId(item.vendorId, req.user._id)) throw new ApiError(403, "You cannot order your own item");
@@ -43,7 +41,6 @@ export const createOrder = asyncHandler(async (req, res) => {
   res.status(201).json({ message: "Order placed successfully", order: serialize({ ...doc, _id: insertedId }) });
 });
 
-// GET /api/orders/my
 export const myOrders = asyncHandler(async (req, res) => {
   const orders = await db
     .orders()
@@ -52,7 +49,6 @@ export const myOrders = asyncHandler(async (req, res) => {
   res.json({ orders: serialize(orders) });
 });
 
-// GET /api/orders/overview
 export const myOverview = asyncHandler(async (req, res) => {
   const rows = await db
     .orders()
@@ -68,7 +64,6 @@ export const myOverview = asyncHandler(async (req, res) => {
   });
 });
 
-// GET /api/orders/:id  (the customer who placed it, or the vendor it belongs to)
 export const getOrder = asyncHandler(async (req, res) => {
   const _id = toObjectId(req.params.id, "order id");
   const [order] = await db
@@ -82,7 +77,6 @@ export const getOrder = asyncHandler(async (req, res) => {
   res.json({ order: serialize(order) });
 });
 
-// PATCH /api/orders/:id/cancel  (own order, pending only)
 export const cancelOrder = asyncHandler(async (req, res) => {
   const _id = toObjectId(req.params.id, "order id");
   const updated = await db

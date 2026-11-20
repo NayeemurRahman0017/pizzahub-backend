@@ -16,6 +16,6 @@ router.get("/menu-items", c.listMenuItems);
 router.patch("/menu-items/:id/status", validate(adminItemStatusSchema), c.setItemStatus);
 router.delete("/menu-items/:id", c.deleteItem);
 
-router.get("/transactions", c.listTransactions); // read-only on purpose
+router.get("/transactions", c.listTransactions);
 
 export default router;

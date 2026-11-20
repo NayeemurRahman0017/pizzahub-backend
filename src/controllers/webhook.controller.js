@@ -12,13 +12,12 @@ const periodEnd = (sub) => {
 const findVendor = async (vendorId) => (vendorId ? db.users().findOne({ ...userIdFilter(vendorId), role: "vendor" }) : null);
 
 async function onCheckoutCompleted(session) {
-  if (session.mode !== "subscription" || session.payment_status !== "paid") return; // only verified, paid sessions
+  if (session.mode !== "subscription" || session.payment_status !== "paid") return;
   const vendor = await findVendor(session.client_reference_id || session.metadata?.vendorId);
   if (!vendor) return console.warn("Webhook: vendor not found for session", session.id);
 
   const subscription = await stripe.subscriptions.retrieve(session.subscription);
 
-  // idempotent: webhook retries do not create duplicate transactions
   await db.transactions().updateOne(
     { stripeSessionId: session.id },
     {
@@ -46,7 +45,6 @@ async function onSubscriptionUpdated(subscription) {
   } else if (["canceled", "unpaid", "incomplete_expired"].includes(subscription.status)) {
     await downgradeToFree(vendor._id);
   }
-  // "past_due" keeps Premium until the stored expiry date; a cancel scheduled at period end keeps it until then too.
 }
 
 async function onSubscriptionDeleted(subscription) {
@@ -54,7 +52,6 @@ async function onSubscriptionDeleted(subscription) {
   if (vendor) await downgradeToFree(vendor._id);
 }
 
-// POST /api/webhooks/stripe  (raw body, signature verified)
 export async function stripeWebhook(req, res) {
   let event;
   try {

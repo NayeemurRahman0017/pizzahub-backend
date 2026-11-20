@@ -8,7 +8,6 @@ export function toObjectId(id, label = "id") {
   return new ObjectId(id);
 }
 
-// Better Auth user ids are normally ObjectIds; tolerate string ids too.
 export function userIdFilter(id) {
   const s = String(id);
   return HEX24.test(s) ? { $or: [{ _id: new ObjectId(s) }, { _id: s }] } : { _id: s };
@@ -26,7 +25,6 @@ export function parsePaging(query, { defaultLimit = 10, maxLimit = 50 } = {}) {
   return { page, limit, skip: (page - 1) * limit };
 }
 
-// ObjectId -> string, Date -> ISO string, _id -> id (recursive)
 export function serialize(value) {
   if (value instanceof ObjectId) return value.toString();
   if (value instanceof Date) return value.toISOString();
