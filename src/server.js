@@ -5,7 +5,7 @@ import { closeDB, connectDB } from "./config/db.js";
 await connectDB();
 
 const server = app.listen(env.port, () => {
-  console.log(`PizzaHub API running on http://localhost:${env.port}`);
+  console.log(`PizzaHub API running on port ${env.port}`);
 });
 
 let shuttingDown = false;

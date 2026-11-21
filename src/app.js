@@ -20,11 +20,25 @@ const app = express();
 
 app.set("trust proxy", 1);
 
+// Allowed frontend origins
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://pizzahub-y5rh.vercel.app/",
+];
+
+// Security middleware
 app.use(helmet());
 
+// CORS configuration
 app.use(
   cors({
-    origin: env.frontendUrl,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error("Not allowed by CORS"));
+      }
+    },
     credentials: true,
     methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
