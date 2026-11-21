@@ -45,6 +45,7 @@ export const publicUser = (u) => ({
   role: u.role,
   isBlocked: !!u.isBlocked,
   businessName: u.businessName ?? null,
+  location: u.location ?? null,
   subscriptionPlan: u.subscriptionPlan ?? "free",
   subscriptionExpiresAt: u.subscriptionExpiresAt ?? null,
   createdAt: u.createdAt,

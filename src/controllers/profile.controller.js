@@ -11,6 +11,7 @@ export const updateProfile = asyncHandler(async (req, res) => {
   if (req.body.name !== undefined) changes.name = req.body.name;
   if (req.body.image !== undefined) changes.image = req.body.image || null;
   if (req.body.businessName !== undefined && req.user.role === "vendor") changes.businessName = req.body.businessName;
+  if (req.body.location !== undefined && req.user.role === "vendor") changes.location = req.body.location || null;
 
   if (Object.keys(changes).length) await db.users().updateOne({ _id: req.user._id }, { $set: changes });
   res.json({ message: "Profile updated successfully", user: publicUser({ ...req.user, ...changes }) });

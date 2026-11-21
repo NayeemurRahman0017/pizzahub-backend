@@ -37,6 +37,7 @@ export const profileSchema = z.object({
   name: z.string().trim().min(2).max(80).optional(),
   image: z.union([z.string().url(), z.literal("")]).optional(),
   businessName: z.string().trim().min(2).max(100).optional(),
+  location: z.union([z.string().trim().min(2).max(100), z.literal("")]).optional(),
 });
 
 export const blockSchema = z.object({ isBlocked: z.boolean() });
